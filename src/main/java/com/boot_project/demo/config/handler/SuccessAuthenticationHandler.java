@@ -39,12 +39,6 @@ public class SuccessAuthenticationHandler implements AuthenticationSuccessHandle
     private String determineTargetUrl(Authentication authentication) {
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 
-        for(GrantedAuthority authority : authorities){
-            System.out.println(authority.getAuthority());
-        }
-        System.out.println(authorities.contains(new Role("ADMIN")));
-
-
         if (authorities.contains(new Role("ADMIN"))){
             return "/admin/show";
         } else if (authorities.contains(new Role("USER"))) {

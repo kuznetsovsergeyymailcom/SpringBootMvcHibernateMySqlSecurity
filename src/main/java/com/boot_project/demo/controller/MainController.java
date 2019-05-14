@@ -59,7 +59,9 @@ public class MainController {
                              @AuthenticationPrincipal User user) {
         ModelAndView modelAndView = new ModelAndView();
         model.addAttribute("users", userService.getAllUsers());
+        model.addAttribute("is_admin", user.getRoles().contains(new Role("ADMIN")));
         modelAndView.addObject("user", user);
+
         modelAndView.setViewName("admin");
 
         return modelAndView;
@@ -117,8 +119,14 @@ public class MainController {
     @RequestMapping(value = "/user", method = {RequestMethod.GET, RequestMethod.POST})
     public String user(@AuthenticationPrincipal User user, Model model) {
         model.addAttribute("user", user);
+        model.addAttribute("is_admin", user.getRoles().contains(new Role("ADMIN")));
 
         return "user";
+    }
+
+    @GetMapping("/403")
+    public String access_denied(){
+        return "access_denied";
     }
 
     private Set<Role> getRoles(String role) {

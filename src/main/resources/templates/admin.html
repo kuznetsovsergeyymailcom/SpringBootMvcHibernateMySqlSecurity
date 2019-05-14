@@ -1,11 +1,24 @@
-<!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>ListOfUsers</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <meta charset="UTF-8"/>
+    <title>Admin page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/scripts.js"></script>
+
+
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"
+          rel="stylesheet" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous"/>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"
+            integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js"
+            integrity="sha384-u/bQvRA/1bobcXlcEYpsEdFVK/vJs3+T+nXLsBYJthmdBuavHvAW6UsmqO2Gd/F9" crossorigin="anonymous"></script>
+
+    <link type="text/css" href="/css/styles.css" rel="stylesheet"/>
+
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
           integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
     <script defer src="https://use.fontawesome.com/releases/v5.8.2/js/all.js"
@@ -13,6 +26,10 @@
             crossorigin="anonymous"></script>
 
     <script type="text/javascript">
+        $(document).on("click", 'ul li', function(){
+            $('ul li').removeClass('active');
+            $(this).addClass('active');
+        });
 
         function fillModalAndStart(e) {
             console.log("button pressed");
@@ -37,59 +54,35 @@
 
         });
     </script>
-    <style>
-        .main_body {
-            min-height: 100vh;
-        }
-    </style>
-</head>
 
+
+</head>
 <body>
 
-<nav class="navbar navbar-dark bg-dark py-2">
-    <a class="navbar-brand text-white" th:href="@{/#}">Project</a>
-    <span class="text-white align-text-right">
-        <span sec:authorize="isAuthenticated()" style="display: inline-block;">
-                    Logged in:<th:block th:text="${user.username}"/>
-        </span> |
-                    <a th:href="@{/logout}">Sign Out</a>
-    </span>
 
-</nav>
+<div id="wrapper">
 
-<div class="container-fluid">
+    <div th:include="fragments :: header"></div>
 
-    <div class="row">
-        <!---Left panel, menu-->
-        <div class="col-2 main_body">
-            <div sec:authorize="hasRole('ROLE_ADMIN')">
-                <div class="text-dark py-2">
-                    <a th:href="@{/admin/show}">Admin page</a>
-                </div>
-            </div>
-
-            <div class="text-dark">
-                <a th:href="@{/user}">User page</a>
-            </div>
-
-        </div>
-        <!---/Left panel, menu-->
-
+    <div class="container-fluid">
         <!-- Main body of page, content-->
-        <div class="col-10 bg-light  main_body">
+        <div class="col-10 bg-light  main_body px-3">
             <div class="text-dark">
                 <h2 class="mt-2">Admin panel</h2>
                 <div class="container">
 
-                    <!--Table of oll users-->
 
-                    <ul class="nav nav-tabs py-5">
-                        <li class="nav-item flex-column active"><a data-toggle="tab" th:href="@{#users}">Users
-                            table</a></li>
-                        <li class="nav-item"><a data-toggle="tab" th:href="@{#newUser}" class="px-2">New user</a></li>
+
+                    <ul class="nav nav-pills py-5">
+                        <li class="nav-item flex-column active">
+                            <a class="nav-link" data-toggle="tab" th:href="@{#users}">Users table</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link px-2" data-toggle="tab" th:href="@{#newUser}">New user</a></li>
                     </ul>
 
+
                     <div class="tab-content">
+                        <!--Table of oll users-->
                         <div id="users" class="tab-pane active">
                             <div class="tab-pane px-2 py-2" id="usersTable">
                                 <tr class="items-align-center">
@@ -126,7 +119,6 @@
                             </div>
 
                         </div>
-
                         <!--End of table of all users-->
 
                         <!--New user-->
@@ -208,6 +200,7 @@
                         </div>
 
                         <!--End of new user-->
+                        <!--Edit user modal window-->
                         <div class="fade modal" id="userEdit">
                             <div class="modal-dialog">
                                 <div class="modal-content">
@@ -252,7 +245,7 @@
 
                                                                 <select class="form-control" th:name="roles"
                                                                         multiple="multiple">
-                                                                    <option value="user">user</option>
+                                                                    <option value="user" selected="selected">user</option>
                                                                     <option value="admin">admin</option>
                                                                 </select>
 
@@ -276,8 +269,9 @@
                             </div>
                         </div>
                         <!--/End of new user-->
-
                     </div>
+
+
                 </div>
 
             </div>
@@ -285,28 +279,9 @@
         </div>
 
         <!-- /Main body of page, content-->
-
     </div>
 
 </div>
-
-
-<a href="/admin/add">Add</a>
-<br/>
-<a href="/user">User page</a>
-<br/>
-<a href="/logout">Logout</a>
-<br/>
-
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-        crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-        crossorigin="anonymous"></script>
 
 </body>
 </html>
