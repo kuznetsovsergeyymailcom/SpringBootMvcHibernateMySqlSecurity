@@ -3,6 +3,7 @@ package com.boot_project.demo.controller;
 import com.boot_project.demo.model.User;
 import com.boot_project.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,24 +38,20 @@ public class MyRestController {
     @PostMapping(value = "/save-user")
     public ResponseEntity addUser(@RequestBody User user){
         userService.addUser(user);
-        List<User> allUsers = userService.getAllUsers();
-        return ResponseEntity.ok().body(allUsers);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PutMapping(value = "/update-user/{id}")
-    public ResponseEntity update(@PathVariable("id") Long id, @RequestBody User user){
-        user.setId(id);
-        userService.addUser(user);
-        List<User> allUsers = userService.getAllUsers();
-        return ResponseEntity.ok().body(allUsers);
+    @PutMapping(value = "/update-user")
+    public ResponseEntity update(@RequestBody User user){
+        userService.update(user);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 
     @DeleteMapping(value = "/delete-user/{id}")
     public ResponseEntity delete(@PathVariable("id") Long id){
         userService.remove(id);
-        List<User> allUsers = userService.getAllUsers();
-        return ResponseEntity.ok().body(allUsers);
+        return ResponseEntity.noContent().build();
     }
 
 }
