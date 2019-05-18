@@ -1,6 +1,8 @@
 package com.boot_project.demo.controller;
 
+import com.boot_project.demo.model.Role;
 import com.boot_project.demo.model.User;
+import com.boot_project.demo.service.RoleService;
 import com.boot_project.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,8 @@ public class MyRestController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private RoleService roleService;
 
     @GetMapping(value = "/all")
     public ResponseEntity<List<User>> getAllUsers(){
@@ -27,6 +31,12 @@ public class MyRestController {
     public ResponseEntity<User> getUserById(@PathVariable("id") Long id){
         User user = userService.getUserById(id);
         return ResponseEntity.ok().body(user);
+    }
+
+    @GetMapping(value = "/get-role-by-id/{id}")
+    public ResponseEntity<Role> getRoleById(@PathVariable("id") Long id){
+        Role role = roleService.getRoleById(id);
+        return ResponseEntity.ok().body(role);
     }
 
     @GetMapping(value = "/get-user-by-name/{name}")

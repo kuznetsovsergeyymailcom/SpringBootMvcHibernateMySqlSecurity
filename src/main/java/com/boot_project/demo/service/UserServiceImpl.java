@@ -1,6 +1,7 @@
 package com.boot_project.demo.service;
 
 import com.boot_project.demo.model.User;
+import com.boot_project.demo.repository.RoleRepository;
 import com.boot_project.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
