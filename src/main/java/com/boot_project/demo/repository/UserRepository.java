@@ -11,4 +11,7 @@ import javax.persistence.EntityManager;
 public interface UserRepository extends JpaRepository<User, Long> {
     @Query("select u from User u where u.username = :name")
     User getUserByName(String name);
+
+    @Query("select u from User u where u.email = :email")
+    User getUserByEmail(String email);
 }

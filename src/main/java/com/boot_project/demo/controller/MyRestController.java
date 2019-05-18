@@ -45,6 +45,13 @@ public class MyRestController {
         return ResponseEntity.ok().body(userByName);
     }
 
+    @GetMapping(value = "/get-user-by-email/{email}")
+    public ResponseEntity<User> getUserByEmail(@PathVariable("email") String email){
+        User userByName = userService.getUserByEmail(email);
+        return ResponseEntity.ok().body(userByName);
+    }
+
+
     @PostMapping(value = "/save-user")
     public ResponseEntity addUser(@RequestBody User user){
         userService.addUser(user);

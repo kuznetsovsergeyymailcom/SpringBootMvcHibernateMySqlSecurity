@@ -70,23 +70,25 @@ public class MainController {
 
     @PostMapping(value = "/admin/add")
     public String addUserMethod(@RequestParam("username") String username,
+                                @RequestParam("email") String email,
                                 @RequestParam("password") String password,
                                 @RequestParam("roles") String role) {
         Set<Role> roles = getRoles(role);
 
-        userService.addUser(new User(username, password, roles));
+        userService.addUser(new User(username, email, password, roles));
         return "redirect:/admin/show";
     }
 
     @PostMapping(value = "/admin/update")
     public void updateMethod(@RequestParam("id") String id,
                              @RequestParam("username") String username,
+                             @RequestParam("email") String email,
                              @RequestParam("password") String password,
                              @RequestParam("roles") String role,
                              HttpServletResponse resp) throws IOException {
         Set<Role> roles = getRoles(role);
         Long user_id = Long.parseLong(id);
-        userService.update(new User(user_id, username, password, roles));
+        userService.update(new User(user_id, username, email, password, roles));
         resp.sendRedirect("/admin/show");
     }
 
@@ -125,7 +127,7 @@ public class MainController {
     }
 
     @GetMapping("/403")
-    public String access_denied(){
+    public String access_denied() {
         return "access_denied";
     }
 

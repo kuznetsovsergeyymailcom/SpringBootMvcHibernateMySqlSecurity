@@ -1,6 +1,6 @@
-insert into users(username,password)values('user','user');
-insert into users(username,password)values('admin','admin');
-insert into users(username,password)values('user1','user1');
+insert into users(username,email,password)values('user','email@user.com','user');
+insert into users(username,email,password)values('admin','email@admin.com','admin');
+insert into users(username,email,password)values('user1','email@user1.com','user1');
 
 insert into roles(name)value('ADMIN');
 insert into roles(name)value('USER');

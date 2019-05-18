@@ -31,24 +31,6 @@
             $(this).addClass('active');
         });
 
-        function fillModalAndStart(e) {
-            console.log("button pressed");
-            var tr = e.parentNode.parentElement.childNodes;
-            var user_id = tr.item(0).nextElementSibling.innerHTML;
-            var user_name = tr.item(2).nextElementSibling.innerHTML;
-            var user_password = tr.item(4).nextElementSibling.innerHTML;
-
-            console.log(user_id);
-            console.log(user_name);
-            console.log(user_password);
-
-            $("#modal_id").val(user_id);
-            $("#modal_name").val(user_name);
-            $("#modal_password").val(user_password);
-
-            $('#userEdit').modal('show');
-        };
-
         $(document).ready(function () {
             $('#message').delay(1000).fadeOut();
 
@@ -71,8 +53,6 @@
                 <h2 class="mt-2">Admin panel</h2>
                 <div class="container">
 
-
-
                     <ul class="nav nav-pills py-5">
                         <li class="nav-item flex-column active">
                             <a class="nav-link" data-toggle="tab" th:href="@{#users}">Users table</a></li>
@@ -92,6 +72,7 @@
                                         <tr>
                                             <th>ID</th>
                                             <th>Name</th>
+                                            <th>Email</th>
                                             <th>Password</th>
                                             <th>Role</th>
                                             <th>Edit</th>
@@ -101,12 +82,13 @@
                                         <tbody class="text-align-center">
                                         <tr scope="row" th:each="user : ${users}">
                                             <td th:text="${user.id}" id="user.id">${user.id}</td>
-                                            <td th:text="${user.username}" id="user.login">${user.username}</td>
+                                            <td th:text="${user.username}" id="user.username">${user.username}</td>
+                                            <td th:text="${user.email}" id="user.email">${user.email}</td>
                                             <td th:text="${user.password}" id="user.password">${user.password}</td>
                                             <td th:text="${user.roles}" id="user.roles">${user.roles}</td>
                                             <td>
-                                                <button id="editModalShow" class="btn btn-primary" value="Edit"
-                                                        onclick="fillModalAndStart(this)">Update
+                                                <button id="editModalShow" class="btn btn-primary" value="Edit">
+                                                    Update
                                                 </button>
                                             </td>
                                             <td><a th:href="@{'/admin/remove?id='+${user.id}}">
@@ -132,6 +114,7 @@
                                         <hr/>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="col-md-3 field-label-responsive">
                                         <label for="name">Login</label>
@@ -146,7 +129,22 @@
                                             </div>
                                         </div>
                                     </div>
+                                </div>
 
+                                <div class="row">
+                                    <div class="col-md-3 field-label-responsive">
+                                        <label for="email">Email</label>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                                                <div class="input-group-addon" style="width: 2.6rem"><i
+                                                        class="fa fa-envelope"></i></div>
+                                                <input type="text" th:name="email" class="form-control" id="email"
+                                                       placeholder="Your email" required="true"/>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div class="row">
@@ -174,11 +172,11 @@
                                         <div class="form-group has-danger">
                                             <div class="input-group mb-2 mr-sm-2 mb-sm-0">
                                                 <div class="input-group-addon" style="width: 2.6rem"><i
-                                                        class="fa fa-key"></i></div>
+                                                        class="fa fa-user-tag"></i></div>
 
                                                 <select class="form-control" th:name="roles" id="userRole"
                                                         multiple="multiple">
-                                                    <option value="user">user</option>
+                                                    <option value="user" selected="selected">user</option>
                                                     <option value="admin">admin</option>
                                                 </select>
 
@@ -224,9 +222,15 @@
                                                                    id="modal_id" th:name="id" readonly="true"/>
                                                         </div>
                                                         <div class="form-group">
-                                                            <label for="modal_name">Name</label>
+                                                            <label for="modal_username">Name</label>
                                                             <input type="text" class="form-control"
-                                                                   id="modal_name" th:name="username" required="true"/>
+                                                                   id="modal_username" th:name="username" required="true"/>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label for="modal_email">Email</label>
+                                                            <input type="text" class="form-control"
+                                                                   id="modal_email" th:name="email" required="true"/>
                                                         </div>
 
                                                         <div class="form-group">
@@ -239,9 +243,8 @@
                                                         <div class="form-group">
 
                                                             <div class="input-group mb-2 mr-sm-2 mb-sm-0">
-                                                                <label for="modal_password">Role</label>
-                                                                <div class="input-group-addon" style="width: 2.6rem"><i
-                                                                        class="fa fa-key"></i></div>
+                                                                <label>Role</label>
+                                                                <div class="input-group-addon" style="width: 2.6rem"></div>
 
                                                                 <select class="form-control" th:name="roles"
                                                                         multiple="multiple">
