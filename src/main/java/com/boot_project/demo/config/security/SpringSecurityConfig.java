@@ -44,12 +44,14 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 
         http.authorizeRequests()
-                .antMatchers("/", "/login**", "/webjars/**", "/error**", "/google**").permitAll()
-                .antMatchers("/user/**").hasAnyRole("USER", "ADMIN")
-                .antMatchers("/admin/**").hasAnyRole("ADMIN")
+//                .antMatchers("/", "/login**", "/webjars/**", "/error**", "/google**").permitAll()
+
+                .mvcMatchers("/user/**").access("hasAnyRole('ADMIN', 'USER') OR hasAnyAuthority('ADMIN', 'USER')")
+                .mvcMatchers("/admin/**").access("hasRole('ADMIN') or hasAuthority('ADMIN')")
                 .and()
                 .formLogin()
                 .loginPage("/login")
+                .loginProcessingUrl("/validate")
                 .usernameParameter("username")
                 .passwordParameter("password")
                 .successHandler(successAuthenticationHandler)
@@ -69,9 +71,5 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         return NoOpPasswordEncoder.getInstance();
     }
 
-    @Bean
-    public TokenStore tokenStore() {
-        return new InMemoryTokenStore();
-    }
 }
 

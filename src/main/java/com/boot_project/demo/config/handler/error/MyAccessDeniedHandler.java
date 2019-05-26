@@ -25,6 +25,9 @@ public class MyAccessDeniedHandler implements AccessDeniedHandler {
                        AccessDeniedException e) throws IOException, ServletException {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("Stack from access denied handler: ");
+
+        e.printStackTrace();
 
         if (auth != null) {
             logger.info("User '" + auth.getName()

@@ -4,6 +4,7 @@ import com.boot_project.demo.model.Role;
 import com.boot_project.demo.model.User;
 import com.boot_project.demo.service.RoleService;
 import com.boot_project.demo.service.UserService;
+import org.hibernate.context.spi.CurrentSessionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,9 +28,6 @@ import java.util.*;
 @Controller
 @RequestMapping("/")
 public class MainController {
-
-    @Autowired
-    private TokenStore tokenStore;
 
     private UserService userService;
     private RoleService roleService;
@@ -73,14 +71,12 @@ public class MainController {
 
     @GetMapping("/login")
     public String login() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        authentication.setAuthenticated(false);
 
         return "login";
     }
 
     @RequestMapping(value = "/admin/show", method = {RequestMethod.GET, RequestMethod.POST})
-    public ModelAndView show(Model model, HttpServletResponse resp,
+    public ModelAndView show(Model model,
                              @AuthenticationPrincipal User user) {
         ModelAndView modelAndView = new ModelAndView();
         model.addAttribute("users", userService.getAllUsers());
@@ -133,10 +129,8 @@ public class MainController {
     }
 
     @GetMapping("/logout")
-    public String logout(HttpServletRequest request, @AuthenticationPrincipal Principal principal) {
-        OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) principal;
-        oAuth2Authentication.eraseCredentials();
-
+    public String logout(HttpServletRequest request) {
+        request.getSession().invalidate();
         return "redirect:/";
     }
 
@@ -150,17 +144,20 @@ public class MainController {
                        @AuthenticationPrincipal Principal principal, Model model) {
         String name;
         Map<String, String> details;
+        if(user == null && principal != null){
+            OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) principal;
+            Authentication authentication = oAuth2Authentication.getUserAuthentication();
+            details = (Map<String, String>) authentication.getDetails();
 
-        OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) principal;
-        Authentication authentication = oAuth2Authentication.getUserAuthentication();
-        details = (Map<String, String>) authentication.getDetails();
-
-        Map<String, String> map = new LinkedHashMap<>();
-        map.put("email", details.get("email"));
-        map.put("username", details.get("name"));
-
-        if(principal != null){
+            Map<String, String> map = new LinkedHashMap<>();
+            map.put("email", details.get("email"));
+            map.put("username", details.get("name"));
             name = details.get("name");
+
+            User userByEmail = userService.getUserByEmail(details.get("email"));
+            if(userByEmail == null){
+                userService.addUser(new User(details.get("name"), details.get("email"), "123", getRoles("user")));
+            }
         }else{
             name = user.getUsername();
         }
