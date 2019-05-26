@@ -5,21 +5,31 @@ import com.boot_project.demo.model.User;
 import com.boot_project.demo.service.RoleService;
 import com.boot_project.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.View;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import java.io.UnsupportedEncodingException;
+import java.security.Principal;
+import java.util.*;
 
 @Controller
 @RequestMapping("/")
 public class MainController {
+
+    @Autowired
+    private TokenStore tokenStore;
 
     private UserService userService;
     private RoleService roleService;
@@ -31,25 +41,40 @@ public class MainController {
     }
 
     @GetMapping("/")
-    public void main(@AuthenticationPrincipal User user, HttpServletResponse response) throws IOException {
+    public String main(@AuthenticationPrincipal User user,
+                     @AuthenticationPrincipal Principal principal,
+                     HttpServletResponse response) throws IOException {
+
+        if(principal != null){
+            OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) principal;
+            Authentication authentication = oAuth2Authentication.getUserAuthentication();
+            if(authentication.isAuthenticated())
+                response.sendRedirect("/user");
+            return null;
+        }
+
         String url;
 
-        if (user != null) {
+        if (user != null ) {
+
             if (user.getRoles().contains(new Role("ADMIN"))) {
                 url = "/admin/show";
             } else {
                 url = "/user";
             }
-        } else {
-            url = "/login";
+
+            response.sendRedirect(url);
+            return null;
         }
 
-        response.sendRedirect(url);
+        return "login";
 
     }
 
     @GetMapping("/login")
     public String login() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        authentication.setAuthenticated(false);
 
         return "login";
     }
@@ -108,8 +133,10 @@ public class MainController {
     }
 
     @GetMapping("/logout")
-    public String logout(HttpServletRequest request) {
-        request.getSession().removeAttribute("user");
+    public String logout(HttpServletRequest request, @AuthenticationPrincipal Principal principal) {
+        OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) principal;
+        oAuth2Authentication.eraseCredentials();
+
         return "redirect:/";
     }
 
@@ -119,12 +146,32 @@ public class MainController {
     }
 
     @RequestMapping(value = "/user", method = {RequestMethod.GET, RequestMethod.POST})
-    public String user(@AuthenticationPrincipal User user, Model model) {
-        model.addAttribute("user", user);
-        model.addAttribute("is_admin", user.getRoles().contains(new Role("ADMIN")));
+    public String user(@AuthenticationPrincipal User user,
+                       @AuthenticationPrincipal Principal principal, Model model) {
+        String name;
+        Map<String, String> details;
+
+        OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) principal;
+        Authentication authentication = oAuth2Authentication.getUserAuthentication();
+        details = (Map<String, String>) authentication.getDetails();
+
+        Map<String, String> map = new LinkedHashMap<>();
+        map.put("email", details.get("email"));
+        map.put("username", details.get("name"));
+
+        if(principal != null){
+            name = details.get("name");
+        }else{
+            name = user.getUsername();
+        }
+
+        model.addAttribute("username", name);
+
+//        model.addAttribute("is_admin", user.getRoles().contains(new Role("ADMIN")));
 
         return "user";
     }
+
 
     @GetMapping("/403")
     public String access_denied() {

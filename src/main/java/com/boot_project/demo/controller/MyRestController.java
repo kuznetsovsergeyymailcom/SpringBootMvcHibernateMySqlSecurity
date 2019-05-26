@@ -10,7 +10,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.security.Principal;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/rest")
@@ -52,6 +57,7 @@ public class MyRestController {
     }
 
 
+
     @PostMapping(value = "/save-user")
     public ResponseEntity addUser(@RequestBody User user){
         userService.addUser(user);
@@ -69,6 +75,13 @@ public class MyRestController {
     public ResponseEntity delete(@PathVariable("id") Long id){
         userService.remove(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @RequestMapping(value = { "/user"}, method = {RequestMethod.GET, RequestMethod.POST})
+    public Map<String, String> user(Principal principal) {
+        Map<String, String> map = new LinkedHashMap<>();
+        map.put("name", principal.getName());
+        return map;
     }
 
 }
