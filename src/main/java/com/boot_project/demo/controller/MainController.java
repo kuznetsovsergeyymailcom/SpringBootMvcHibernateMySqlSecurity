@@ -40,20 +40,20 @@ public class MainController {
 
     @GetMapping("/")
     public String main(@AuthenticationPrincipal User user,
-                     @AuthenticationPrincipal Principal principal,
-                     HttpServletResponse response) throws IOException {
+                       @AuthenticationPrincipal Principal principal,
+                       HttpServletResponse response) throws IOException {
 
-        if(principal != null){
+        if (user == null && principal != null) {
             OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) principal;
             Authentication authentication = oAuth2Authentication.getUserAuthentication();
-            if(authentication.isAuthenticated())
+            if (authentication.isAuthenticated())
                 response.sendRedirect("/user");
             return null;
         }
 
         String url;
 
-        if (user != null ) {
+        if (user != null) {
 
             if (user.getRoles().contains(new Role("ADMIN"))) {
                 url = "/admin/show";
@@ -78,11 +78,16 @@ public class MainController {
     @RequestMapping(value = "/admin/show", method = {RequestMethod.GET, RequestMethod.POST})
     public ModelAndView show(Model model,
                              @AuthenticationPrincipal User user) {
+        String username = "";
         ModelAndView modelAndView = new ModelAndView();
         model.addAttribute("users", userService.getAllUsers());
         model.addAttribute("is_admin", user.getRoles().contains(new Role("ADMIN")));
-        modelAndView.addObject("user", user);
+        if (user != null) {
+            username = user.getUsername();
 
+        }
+
+        modelAndView.addObject("username", username);
         modelAndView.setViewName("admin");
 
         return modelAndView;
@@ -144,7 +149,11 @@ public class MainController {
                        @AuthenticationPrincipal Principal principal, Model model) {
         String name;
         Map<String, String> details;
-        if(user == null && principal != null){
+        if (user != null) {
+            model.addAttribute("is_admin", user.getRoles().contains(new Role("ADMIN")));
+        }
+
+        if (user == null && principal != null) {
             OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) principal;
             Authentication authentication = oAuth2Authentication.getUserAuthentication();
             details = (Map<String, String>) authentication.getDetails();
@@ -155,10 +164,10 @@ public class MainController {
             name = details.get("name");
 
             User userByEmail = userService.getUserByEmail(details.get("email"));
-            if(userByEmail == null){
+            if (userByEmail == null) {
                 userService.addUser(new User(details.get("name"), details.get("email"), "123", getRoles("user")));
             }
-        }else{
+        } else {
             name = user.getUsername();
         }
 
