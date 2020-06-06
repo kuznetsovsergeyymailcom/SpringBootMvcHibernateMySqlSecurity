@@ -3,8 +3,8 @@
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/users?useSSL=false&useUnicode=yes&characterEncoding=UTF-8
-    username: root
-    password: root
+    username: 
+    password: 
     initialization-mode: always
   thymeleaf:
         encoding: UTF-8
@@ -32,8 +32,8 @@ logging:
 security:
   oauth2:
     client:
-      clientId: 453926201941-p4tj0n33lg0li7uvn808brll3fnhpiqr.apps.googleusercontent.com
-      clientSecret: s_H2CM6Ck4OrR2F-yKE383F4
+      clientId:
+      clientSecret: 
       accessTokenUri:  https://www.googleapis.com/oauth2/v3/token
       userAuthorizationUri:  https://accounts.google.com/o/oauth2/auth
       tokenName: oauth_token
